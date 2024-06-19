@@ -1,0 +1,115 @@
+PennController.ResetPrefix(null);
+PennController.DebugOff();
+
+Sequence("Participantes", "Instrucoes", "TestePerceptivo", "Experimento2", SendResults(), "Final");
+
+Header(
+  defaultText
+    .css("font-size", "1.2em")
+    .print(),
+  defaultTextInput
+    .css("font-size", "1.2em")
+    .print(),
+  defaultButton
+    .css("font-size", "1.2em")
+    .print()
+    .center()
+    .wait()
+);
+
+newTrial("Participantes",
+  newTimer("start").start(),
+  newText("Olá! Seja bem-vindo ao nosso experimento!")
+    .print(),
+  newText("Por gentileza, escreva o SEU NOME COMPLETO na caixa abaixo:")
+    .print(),
+  newTextInput("SeuNome")
+    .print()
+    .log(),
+  newText("Por gentileza, selecione o CURSO que faz na UFERSA:")
+    .print(),
+  newDropDown("curso", "Selecione seu curso")
+    .add("Engenharia", "Ciências e Tecnologias", "Letras")
+    .css("font-size", "1.2em")
+    .print()
+    .log("last"),
+  newButton("Vamos para as instruções")
+    .print()
+    .wait(),
+  newVar("NOME")
+    .global()
+    .set(getTextInput("SeuNome")),
+  newTimer("end").start(),
+  newTimer("start").log()
+)
+.log("NOME", getVar("NOME"))
+.log("TimeOnPage", getTimer("start").test.elapsed());
+
+newTrial("Instrucoes",
+  newTimer("start").start(),
+  newButton("Iniciar")
+    .print()
+    .wait(),
+  newTimer("end").start(),
+  newTimer("start").log()
+)
+.log("TimeOnPage", getTimer("start").test.elapsed());
+
+Template("teste_auditivo.csv",
+  row => newTrial("TestePerceptivo",
+    newTimer("start").start(),
+    newAudio("AudioExperimento", row.AudioExperimento)
+      .play(),
+    newImage("alto_falante_icone.png")
+      .size(90, 90)
+      .print()
+      .center(),
+    newButton("Próximo")
+      .log()
+      .wait()
+      .remove(),
+    getImage("alto_falante_icone.png")
+      .remove(),
+    newText("A", row.SentencaA),
+    newText("B", row.SentencaB),
+    newCanvas("2000vw", "800vw")
+      .add("center at 25%", "middle at 2%", getText("A"))
+      .add("center at 75%", "middle at 2%", getText("B"))
+      .print(),
+    newSelector()
+      .add(getText("A"), getText("B"))
+      .keys("A", "B")
+      .log()
+      .wait(),
+    newTimer("end").start(),
+    newTimer("start").log()
+  )
+  .log("Group", row.Group)
+  .log("Item", row.Item)
+  .log("TimeOnPage", getTimer("start").test.elapsed())
+);
+
+newTrial("Experimento2",
+  newTimer("start").start(),
+  newText("Imagine a seguinte situação: você encontra uma receita de macarrão gourmet no TikTok e resolve recriar essa receita. Suponha que você seguiu a receita à risca, com todos os seus passos. Ao final, prova e gosta muito. Você, então, diz:")
+    .print(),
+  newText("Ficou muito gostoso, o macarrão")
+    .css("font-weight", "bold")
+    .print(),
+  newButton("Próximo")
+    .print()
+    .wait()
+    .log(),
+  newTimer("end").start(),
+  newTimer("start").log()
+)
+.log("TimeOnPage", getTimer("start").test.elapsed());
+
+newTrial("Final",
+  newText("Obrigada por participar do experimento!")
+    .print(),
+  newButton("Finalizar")
+    .print()
+    .wait()
+)
+.setOption("countsForProgressBar", false);
